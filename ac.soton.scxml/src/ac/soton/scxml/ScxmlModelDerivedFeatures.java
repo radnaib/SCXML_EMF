@@ -91,5 +91,14 @@ public class ScxmlModelDerivedFeatures {
 		}
 		return allTransitions;
 	}
+	
+	public static List<ScxmlDataType> getDataElements(ScxmlDatamodelType scxmlDatamodel) {
+		return scxmlDatamodel
+				.eContents()
+				.stream()
+				.filter(it -> it instanceof ScxmlDataType)
+				.map(it -> (ScxmlDataType)it)
+				.collect(Collectors.toList());
+	}
 
 }
