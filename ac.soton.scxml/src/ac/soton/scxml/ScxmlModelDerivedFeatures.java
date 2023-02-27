@@ -100,5 +100,17 @@ public class ScxmlModelDerivedFeatures {
 				.map(it -> (ScxmlDataType)it)
 				.collect(Collectors.toList());
 	}
+	
+	public static List<ScxmlInvokeType> getAllInvokes(ScxmlScxmlType scxmlRoot) {
+		List<ScxmlInvokeType> allInvokes = new ArrayList<ScxmlInvokeType>();
+		var iterator = scxmlRoot.eAllContents();
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			if (element instanceof ScxmlInvokeType) {
+				allInvokes.add((ScxmlInvokeType) element);
+			}
+		}
+		return allInvokes;
+	}
 
 }
