@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 public class ScxmlModelDerivedFeatures {
@@ -21,8 +22,7 @@ public class ScxmlModelDerivedFeatures {
 	}
 
 	public static boolean isStateNode(EObject scxmlElement) {
-		return scxmlElement instanceof ScxmlStateType
-				|| scxmlElement instanceof ScxmlParallelType
+		return scxmlElement instanceof ScxmlStateType || scxmlElement instanceof ScxmlParallelType
 				|| scxmlElement instanceof ScxmlFinalType;
 	}
 
@@ -33,12 +33,10 @@ public class ScxmlModelDerivedFeatures {
 	public static boolean isCompoundState(ScxmlStateType state) {
 		return state.eContents().stream().anyMatch(it -> isStateNode(it));
 	}
-	
+
 	public static boolean isTransitionSource(EObject scxmlElement) {
-		return scxmlElement instanceof ScxmlStateType
-				|| scxmlElement instanceof ScxmlParallelType
-				|| scxmlElement instanceof ScxmlInitialType
-				|| scxmlElement instanceof ScxmlHistoryType;
+		return scxmlElement instanceof ScxmlStateType || scxmlElement instanceof ScxmlParallelType
+				|| scxmlElement instanceof ScxmlInitialType || scxmlElement instanceof ScxmlHistoryType;
 	}
 
 	public static List<EObject> getStateNodes(EObject scxmlElement) {
@@ -68,12 +66,11 @@ public class ScxmlModelDerivedFeatures {
 
 		return (ScxmlStateType) parent;
 	}
-	
+
 	public static EObject getTransitionSource(ScxmlTransitionType scxmlTransition) {
 		var parent = scxmlTransition.eContainer();
 		if (!isTransitionSource(parent)) {
-			throw new IllegalArgumentException(
-					"The parent element of transition " + scxmlTransition
+			throw new IllegalArgumentException("The parent element of transition " + scxmlTransition
 					+ " is not a valid Scxml transition source type: " + parent);
 		}
 
@@ -85,22 +82,18 @@ public class ScxmlModelDerivedFeatures {
 		var iterator = scxmlRoot.eAllContents();
 		while (iterator.hasNext()) {
 			var element = iterator.next();
-			if (element instanceof ScxmlTransitionType) {
-				allTransitions.add((ScxmlTransitionType) element);
+			if (element instanceof ScxmlTransitionType scxmlTransitionType) {
+				allTransitions.add(scxmlTransitionType);
 			}
 		}
 		return allTransitions;
 	}
-	
+
 	public static List<ScxmlDataType> getDataElements(ScxmlDatamodelType scxmlDatamodel) {
-		return scxmlDatamodel
-				.eContents()
-				.stream()
-				.filter(it -> it instanceof ScxmlDataType)
-				.map(it -> (ScxmlDataType)it)
-				.collect(Collectors.toList());
+		return scxmlDatamodel.eContents().stream().filter(it -> it instanceof ScxmlDataType)
+				.map(it -> (ScxmlDataType) it).collect(Collectors.toList());
 	}
-	
+
 	public static List<ScxmlInvokeType> getAllInvokes(ScxmlScxmlType scxmlRoot) {
 		List<ScxmlInvokeType> allInvokes = new ArrayList<ScxmlInvokeType>();
 		var iterator = scxmlRoot.eAllContents();
@@ -111,6 +104,24 @@ public class ScxmlModelDerivedFeatures {
 			}
 		}
 		return allInvokes;
+	}
+
+	public static List<EObject> getOnentryActions(ScxmlOnentryType scxmlOnentry) {
+		return scxmlOnentry.eContents();
+	}
+
+	public static List<EObject> getOnexitActions(ScxmlOnexitType scxmlOnexit) {
+		return scxmlOnexit.eContents();
+	}
+
+	public static EList<EObject> getTransitionActions(ScxmlTransitionType scxmlTransition) {
+		return scxmlTransition.eContents();
+	}
+
+	// TODO Order of actions in ifthen/elseif/else parts
+	// TODO Elseifs, else partitioning actions
+	public static EList<EObject> getIfThenActions(ScxmlIfType scxmlIf) {
+		return scxmlIf.eContents();
 	}
 
 }
